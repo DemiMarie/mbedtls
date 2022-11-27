@@ -88,6 +88,25 @@ int mbedtls_x509_get_serial(unsigned char **p, const unsigned char *end,
         return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_SERIAL, ret);
     }
 
+    if (serial->len < 1) {
+        return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_SERIAL,
+                                 MBEDTLS_ERR_ASN1_INVALID_LENGTH);
+    }
+
+    if (serial->len < 2) {
+        /* No negative zero, please. */
+        if ((*p)[0] == 0x80) {
+            return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_SERIAL,
+                                     MBEDTLS_ERR_ASN1_INVALID_DATA);
+        }
+    } else {
+        /* If first octet is 0 or 0x80, second octet must have high bit set. */
+        if (((*p)[0] & 0x7F) == 0 && ((*p)[1] & 0x80) == 0) {
+            return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_SERIAL,
+                                     MBEDTLS_ERR_ASN1_INVALID_DATA);
+        }
+    }
+
     serial->p = *p;
     *p += serial->len;
 
