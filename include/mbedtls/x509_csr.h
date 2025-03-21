@@ -291,18 +291,6 @@ int mbedtls_x509write_csr_set_subject_alternative_name(mbedtls_x509write_csr *ct
                                                        const mbedtls_x509_san_list *san_list);
 
 /**
- * \brief           Set the Netscape Cert Type flags
- *                  (e.g. MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT | MBEDTLS_X509_NS_CERT_TYPE_EMAIL)
- *
- * \param ctx           CSR context to use
- * \param ns_cert_type  Netscape Cert Type flags to set
- *
- * \return          0 if successful, or MBEDTLS_ERR_X509_ALLOC_FAILED
- */
-int mbedtls_x509write_csr_set_ns_cert_type(mbedtls_x509write_csr *ctx,
-                                           unsigned char ns_cert_type);
-
-/**
  * \brief           Generic function to add to or replace an extension in the
  *                  CSR
  *

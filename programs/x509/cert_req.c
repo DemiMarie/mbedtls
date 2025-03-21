@@ -42,8 +42,6 @@ int main(void)
 #define DFL_SUBJECT_NAME        "CN=Cert,O=mbed TLS,C=UK"
 #define DFL_KEY_USAGE           0
 #define DFL_FORCE_KEY_USAGE     0
-#define DFL_NS_CERT_TYPE        0
-#define DFL_FORCE_NS_CERT_TYPE  0
 #define DFL_MD_ALG              MBEDTLS_MD_SHA256
 
 #define USAGE \
@@ -72,17 +70,6 @@ int main(void)
     "                          crl_sign\n"              \
     "    force_key_usage=0/1  default: off\n"           \
     "                          Add KeyUsage even if it is empty\n"  \
-    "    ns_cert_type=%%s     default: (empty)\n"       \
-    "                        Comma-separated-list of values:\n"     \
-    "                          ssl_client\n"            \
-    "                          ssl_server\n"            \
-    "                          email\n"                 \
-    "                          object_signing\n"        \
-    "                          ssl_ca\n"                \
-    "                          email_ca\n"              \
-    "                          object_signing_ca\n"     \
-    "    force_ns_cert_type=0/1 default: off\n"         \
-    "                          Add NsCertType even if it is empty\n"    \
     "    md=%%s               default: SHA256\n"       \
     "                          possible values:\n"     \
     "                          MD5, RIPEMD160, SHA1,\n" \
@@ -185,8 +172,6 @@ usage:
     opt.subject_name        = DFL_SUBJECT_NAME;
     opt.key_usage           = DFL_KEY_USAGE;
     opt.force_key_usage     = DFL_FORCE_KEY_USAGE;
-    opt.ns_cert_type        = DFL_NS_CERT_TYPE;
-    opt.force_ns_cert_type  = DFL_FORCE_NS_CERT_TYPE;
     opt.md_alg              = DFL_MD_ALG;
     opt.san_list            = NULL;
 
@@ -344,38 +329,6 @@ usage:
             switch (atoi(q)) {
                 case 0: opt.force_key_usage = 0; break;
                 case 1: opt.force_key_usage = 1; break;
-                default: goto usage;
-            }
-        } else if (strcmp(p, "ns_cert_type") == 0) {
-            while (q != NULL) {
-                if ((r = strchr(q, ',')) != NULL) {
-                    *r++ = '\0';
-                }
-
-                if (strcmp(q, "ssl_client") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT;
-                } else if (strcmp(q, "ssl_server") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_SSL_SERVER;
-                } else if (strcmp(q, "email") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_EMAIL;
-                } else if (strcmp(q, "object_signing") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING;
-                } else if (strcmp(q, "ssl_ca") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_SSL_CA;
-                } else if (strcmp(q, "email_ca") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_EMAIL_CA;
-                } else if (strcmp(q, "object_signing_ca") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING_CA;
-                } else {
-                    goto usage;
-                }
-
-                q = r;
-            }
-        } else if (strcmp(p, "force_ns_cert_type") == 0) {
-            switch (atoi(q)) {
-                case 0: opt.force_ns_cert_type = 0; break;
-                case 1: opt.force_ns_cert_type = 1; break;
                 default: goto usage;
             }
         } else {

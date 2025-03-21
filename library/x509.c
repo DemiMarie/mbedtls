@@ -1779,36 +1779,6 @@ int mbedtls_x509_info_subject_alt_name(char **buf, size_t *size,
         sep = ", ";                                     \
     } while (0)
 
-#define CERT_TYPE(type, name)                           \
-    do {                                                \
-        if (ns_cert_type & (type)) {                    \
-            PRINT_ITEM(name);                           \
-        }                                               \
-    } while (0)
-
-int mbedtls_x509_info_cert_type(char **buf, size_t *size,
-                                unsigned char ns_cert_type)
-{
-    int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    size_t n = *size;
-    char *p = *buf;
-    const char *sep = "";
-
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT,         "SSL Client");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_SSL_SERVER,         "SSL Server");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_EMAIL,              "Email");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING,     "Object Signing");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_RESERVED,           "Reserved");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_SSL_CA,             "SSL CA");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_EMAIL_CA,           "Email CA");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING_CA,  "Object Signing CA");
-
-    *size = n;
-    *buf = p;
-
-    return 0;
-}
-
 #define KEY_USAGE(code, name)       \
     do {                            \
         if ((key_usage) & (code)) { \

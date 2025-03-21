@@ -74,7 +74,6 @@ int main(void)
 #define DFL_SIG_ALG             MBEDTLS_MD_SHA256
 #define DFL_KEY_USAGE           0
 #define DFL_EXT_KEY_USAGE       NULL
-#define DFL_NS_CERT_TYPE        0
 #define DFL_VERSION             3
 #define DFL_AUTH_IDENT          1
 #define DFL_SUBJ_IDENT          1
@@ -362,7 +361,6 @@ usage:
     opt.max_pathlen         = DFL_MAX_PATHLEN;
     opt.key_usage           = DFL_KEY_USAGE;
     opt.ext_key_usage       = DFL_EXT_KEY_USAGE;
-    opt.ns_cert_type        = DFL_NS_CERT_TYPE;
     opt.version             = DFL_VERSION - 1;
     opt.md                  = DFL_DIGEST;
     opt.subject_identifier   = DFL_SUBJ_IDENT;
@@ -625,33 +623,6 @@ usage:
                 }
 
                 prev = cur;
-                q = r;
-            }
-        } else if (strcmp(p, "ns_cert_type") == 0) {
-            while (q != NULL) {
-                if ((r = strchr(q, ',')) != NULL) {
-                    *r++ = '\0';
-                }
-
-                if (strcmp(q, "ssl_client") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT;
-                } else if (strcmp(q, "ssl_server") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_SSL_SERVER;
-                } else if (strcmp(q, "email") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_EMAIL;
-                } else if (strcmp(q, "object_signing") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING;
-                } else if (strcmp(q, "ssl_ca") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_SSL_CA;
-                } else if (strcmp(q, "email_ca") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_EMAIL_CA;
-                } else if (strcmp(q, "object_signing_ca") == 0) {
-                    opt.ns_cert_type |= MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING_CA;
-                } else {
-                    mbedtls_printf("Invalid argument for option %s\n", p);
-                    goto usage;
-                }
-
                 q = r;
             }
         } else if (strcmp(p, "format") == 0) {
@@ -954,22 +925,6 @@ usage:
                 " failed\n  !  mbedtls_x509write_crt_set_ext_key_usage returned -0x%02x - %s\n\n",
                 (unsigned int) -ret,
                 buf);
-            goto exit;
-        }
-
-        mbedtls_printf(" ok\n");
-    }
-
-    if (opt.version == MBEDTLS_X509_CRT_VERSION_3 &&
-        opt.ns_cert_type != 0) {
-        mbedtls_printf("  . Adding the NS Cert Type extension ...");
-        fflush(stdout);
-
-        ret = mbedtls_x509write_crt_set_ns_cert_type(&crt, opt.ns_cert_type);
-        if (ret != 0) {
-            mbedtls_strerror(ret, buf, sizeof(buf));
-            mbedtls_printf(" failed\n  !  mbedtls_x509write_crt_set_ns_cert_type "
-                           "returned -0x%04x - %s\n\n", (unsigned int) -ret, buf);
             goto exit;
         }
 
