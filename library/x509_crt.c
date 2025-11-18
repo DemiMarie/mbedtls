@@ -1109,7 +1109,13 @@ static int x509_crt_parse_der_core(mbedtls_x509_crt *crt,
         return MBEDTLS_ERR_X509_INVALID_FORMAT;
     }
 
-    end = crt_end = p + len;
+    if (p + len != end) {
+        mbedtls_x509_crt_free(crt);
+        return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_FORMAT,
+                                 MBEDTLS_ERR_ASN1_LENGTH_MISMATCH);
+    }
+
+    crt_end = end;
     crt->raw.len = (size_t) (crt_end - buf);
     if (make_copy != 0) {
         /* Create and populate a new buffer for the raw field. */
